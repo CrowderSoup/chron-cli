@@ -13,6 +13,10 @@
 				.As('m', "message")
 				.SetDefault(string.Empty);
 
+			parser.Setup(arg => arg.SettingsFile)
+				.As('s', "settings")
+				.SetDefault(string.Empty);
+
 			var result = parser.Parse(args);
 			if (result.HasErrors == false)
 			{

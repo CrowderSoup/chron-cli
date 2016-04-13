@@ -1,0 +1,2 @@
+﻿[chron]
+directory = {{HOME_DIR}}
