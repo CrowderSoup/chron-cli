@@ -15,11 +15,16 @@
 		{
 			get { return Path.Combine(this.HomePath, "chron"); }
 		}
+		private string _LogFile
+		{
+			get { return "log.txt"; }
+		}
 
 		private string Message { get; }
 		private string HomePath { get; }
 		private string SettingsFilePath { get; }
 		private string chronDirectory { get; }
+		private string LogFile { get; }
 
 		public ChronCLI(CLIArguments args)
 		{
@@ -37,6 +42,7 @@
 
 			var iniParser = new FileIniDataParser();
 			var settings = iniParser.ReadFile(this.SettingsFilePath);
+
 			if (settings["chron"]["directory"] == null)
 			{
 				this.chronDirectory = this._chronDirectory;
@@ -44,6 +50,15 @@
 			else
 			{
 				this.chronDirectory = settings["chron"]["directory"];
+			}
+
+			if (settings["chron"]["log_file"] == null)
+			{
+				this.LogFile = this._LogFile;
+			}
+			else
+			{
+				this.LogFile = settings["chron"]["log_file"];
 			}
 		}
 
@@ -56,6 +71,7 @@
 			else
 			{
 				Console.WriteLine(this.Message);
+
 			}
 
 			Console.ReadLine();
