@@ -1,7 +1,9 @@
 ﻿namespace chron_cli
 {
 	using System;
+	using System.Diagnostics;
 	using System.IO;
+	using System.Security.Principal;
 	using IniParser;
 	using Objects;
 
@@ -25,11 +27,13 @@
 		private string SettingsFilePath { get; }
 		private string chronDirectory { get; }
 		private string LogFile { get; }
+		private string Editor { get; }
 
 		public ChronCLI(CLIArguments args)
 		{
 			this.Message = args.Message;
 			this.HomePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+			this.Editor = Environment.GetEnvironmentVariable("EDITOR");
 
 			if (args.SettingsFile == string.Empty)
 			{
@@ -63,13 +67,27 @@
 			{
 				this.LogFile = settings["chron"]["log_file"];
 			}
+
+			// If the value from the environment is null try and get it from settings
+			if (this.Editor == null && settings["editor"]["command"] != null)
+			{
+				this.Editor = settings["editor"]["command"];
+			}
 		}
 
 		public void Run()
 		{
 			if (this.Message == string.Empty)
 			{
-				Console.WriteLine("No Message");
+				this.WriteEntry();
+
+				if (File.Exists(@"Templates\LongEntry.txt"))
+				{
+					var entry = File.ReadAllText(@"Templates\LongEntry.txt");
+					File.WriteAllText(@"Templates\LongEntry.txt", string.Empty);
+
+					Console.WriteLine(entry);
+				}
 			}
 			else
 			{
@@ -98,6 +116,19 @@
 					streamWriter.WriteLine(lineText);
 				}
 			}
+		}
+
+		private void WriteEntry()
+		{
+			Console.WriteLine(WindowsIdentity.GetCurrent().Name);
+			Console.ReadLine();
+
+			var process = Process.Start(new ProcessStartInfo(this.Editor, @"Templates\LongEntry.txt")
+			{
+				UseShellExecute = false,
+				LoadUserProfile = true
+			});
+			process.WaitForExit();
 		}
 
 		#endregion
