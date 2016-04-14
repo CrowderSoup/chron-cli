@@ -52,6 +52,9 @@
 				this.chronDirectory = settings["chron"]["directory"];
 			}
 
+			// Create the chron Directory if it doesn't exist
+			Directory.CreateDirectory(this.chronDirectory);
+
 			if (settings["chron"]["log_file"] == null)
 			{
 				this.LogFile = this._LogFile;
@@ -70,11 +73,33 @@
 			}
 			else
 			{
-				Console.WriteLine(this.Message);
+				var logFilePath = $"{this.chronDirectory}/{this.LogFile}";
+				var lineText = $"{DateTime.Now.ToString("yyyy-MM-dd H:mm:ss")}\t{this.Message}\r\n";
 
+				this.LogMessage(logFilePath, lineText);
 			}
-
-			Console.ReadLine();
 		}
+
+		#region Private Methods
+
+		private void LogMessage(string logFilePath, string lineText)
+		{
+			if (!File.Exists(logFilePath))
+			{
+				using (var streamWriter = File.CreateText(logFilePath))
+				{
+					streamWriter.WriteLine(lineText);
+				}
+			}
+			else
+			{
+				using (var streamWriter = File.AppendText(logFilePath))
+				{
+					streamWriter.WriteLine(lineText);
+				}
+			}
+		}
+
+		#endregion
 	}
 }
