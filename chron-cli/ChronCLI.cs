@@ -120,9 +120,6 @@
 
 		private void WriteEntry()
 		{
-			Console.WriteLine(WindowsIdentity.GetCurrent().Name);
-			Console.ReadLine();
-
 			var process = Process.Start(new ProcessStartInfo(this.Editor, @"Templates\LongEntry.txt")
 			{
 				UseShellExecute = false,
